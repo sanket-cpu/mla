@@ -1,0 +1,82 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+
+# Load the local dataset
+df = pd.read_csv('Student-University.csv')
+
+#Adding columns
+df.columns=['X','y','Target']
+
+# Assuming 'X' and 'y' are the feature and target columns
+X = df[['X', 'y']].values
+y = df['Target'].values
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Initialize the logistic regression model
+model = LogisticRegression()
+
+# Train the model on the training data
+model.fit(X_train, y_train)
+
+
+y_pred = model.predict(X_test)
+
+accuracy = (y_pred == y_test).mean()
+print(f"Accuracy: {accuracy}")
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+x = np.linspace(-7, 7, 200)
+
+
+y = sigmoid(x)
+
+plt.plot(x, y, color='b')
+plt.xlabel('x')
+plt.ylabel('sigmoid(x)')
+plt.title('Sigmoid Function')
+plt.grid(True)
+plt.show()
+
+theta = np.zeros(X_train.shape[1]) # Initialize parameters to zeros
+alpha = 0.01 # Learning rate
+num_iterations = 1000
+
+
+for _ in range(num_iterations):
+    z = np.dot(X_train, theta)
+    h = sigmoid(z)
+    error = h - y_train
+    gradient = np.dot(X_train.T, error) / len(y_train)
+    theta -= alpha * gradient
+
+
+print(f'Regression Parameters using Gradient Descent: {theta}')
+print("Original Data:")
+print(df)
+
+
+df = df[df['y'] <= 45]
+
+
+
+df['X'].fillna(df['X'].mean(), inplace=True)
+df['y'].fillna(df['y'].mean(), inplace=True)
+
+print("\nCleaned Data:")
+print(df)
