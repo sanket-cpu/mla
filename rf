@@ -1,0 +1,43 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.impute import SimpleImputer
+
+
+dataset = pd.read_csv("dataset.csv")
+
+
+dataset = dataset.dropna()  # Drop rows with missing values
+
+
+s_mapping = {"itching": 1, "skin_rash": 2, "continuous_sneezing": 3, "shivering": 4,
+             "stomach_pain": 5, "acidity": 6, "vomiting": 7, "indigestion": 8, "fatigue": 9}
+dataset[["Symptom_1", "Symptom_2", "Symptom_3"]] = dataset[["Symptom_1", "Symptom_2", "Symptom_3"]].applymap(s_mapping.get)
+
+
+X = dataset.drop("Disease", axis=1)
+y = dataset["Disease"]
+
+
+imputer = SimpleImputer(strategy="mean")
+X = imputer.fit_transform(X)  #fit finds mean of each column and transform will replace it wiht new values
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(X_train, y_train)
+y_pred = dt.predict(X_test)
+print("Decision Tree Classifier Performance:")
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred, zero_division=0))  # Handle zero-division warnings
+
+
+rf = RandomForestClassifier(random_state=42)
+rf.fit(X_train, y_train)
+rf_predictions = rf.predict(X_test)
+print("\nRandom Forest Classifier Performance:")
+print("Accuracy:", accuracy_score(y_test, rf_predictions))
+print("Classification Report:\n", classification_report(y_test, rf_predictions, zero_division=0))  # Handle zero-division warnings
