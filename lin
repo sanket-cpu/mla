@@ -1,0 +1,70 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+ft=pd.read_csv("Food-Truck-LineReg.csv" )
+
+ft.head()
+ft.columns=['X','Y']
+ft
+
+X= ft['X']
+Y=ft['Y']
+Y
+
+
+plt.scatter(X,Y)
+plt.show()
+
+mean_x=sum(X)/len(X)
+mean_y=sum(Y)/len(Y)
+print(mean_x)
+print(mean_y)
+
+sm=0
+den=0
+for i in range(len(X)):
+    sm+=(X[i]-mean_x)*(Y[i]-mean_y)
+    den+=(X[i]-mean_x)**2
+m=sm/den
+print(m)
+
+c=mean_y-m*mean_x
+
+print(c)
+
+line=[m*i+c for i in X]
+plt.plot(X,line,label="line fit",color="r")
+plt.scatter(X,Y,label="points")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+SSE=0
+for i, j in zip(Y, line):
+    x = (i - j) ** 2
+    SSE += x
+SSE
+
+line=np.array(line)
+nm=line.mean()
+
+SSR=0
+SST=0
+for i in line:
+    SSR+=(i-nm)**2
+SSR
+
+
+
+
+for i in Y:
+    SST+=(i-mean_y)**2
+SST
+
+r=SSR/SST
+
+r
