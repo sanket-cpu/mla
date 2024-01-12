@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+data=pd.read_csv('lr.csv')
+print(data.head())
+x=data.iloc[:,:-1]
+y=data.iloc[:,-1]
+
+from sklearn import preprocessing
+X1=preprocessing.scale(x)
+df=pd.DataFrame(X1,columns = ["marks1","marks2"])
+print(df.head())
+
+from sklearn.model_selection import KFold
+kf=KFold(n_splits=5)
+
+for train_index,test_index in kf.split(X1):
+  x_train,x_test=df.iloc[train_index,:],df.iloc[test_index,:]
+  y_train,y_test=y[train_index],y[test_index]
+  x1=list(x_train["marks1"].values)
+  x2=list(x_train["marks2"].values)
+  y_train=list(y_train)
+  b0=0.0
+  b1=0.0
+  b2=0.0
+  alpha=0.01
+  epoch=10000
+  for j in range(epoch):
+    for i in range(len(x_train)):
+      pred=1/(1+np.exp(-(b0+x1[i]*b1+x2[i]*b2)))
+      error=y_train[i]-pred
+      cons=1-pred
+      b0=b0+(alpha*cons*error*pred*1)
+      b1=b1+(alpha*cons*error*pred*x1[i])
+      b2=b2+(alpha*cons*error*pred*x2[i])
+
+print(b0,b1,b1)
+
+x1test=list(x_test["marks1"].values)
+x2test=list(x_test["marks2"].values)
+predictions1=[]
+
+
+for i in range(len(x_test)):
+  pred1=1/(1+np.exp(-(b0+x1test[i]*b1+x2test[i]*b2)))
+  print(pred1)
+  predictions1.append(pred1)
+
+
+for i in range(len(predictions1)):
+  predictions1[i]=round(predictions1[i])
+
+predictions1
+
+from sklearn.metrics import accuracy_score
+print(accuracy_score(y_test,predictions1))
