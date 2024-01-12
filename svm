@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn import svm
+from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
+
+data = pd.read_csv("heart_disease.csv")
+
+x = data.drop('target', axis=1) 
+y = data.target
+
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=109)  
+
+kernels = ['rbf', 'poly', 'sigmoid']
+
+for kernel in kernels:
+ 
+    ml = svm.SVC(kernel=kernel)
+
+  
+    ml.fit(x_train, y_train)
+
+
+    y_pred = ml.predict(x_test)
+
+   
+    cm = confusion_matrix(y_test, y_pred)
+    print(f'\nConfusion Matrix for {kernel} kernel:')
+    print(cm)
+   
+    accuracy = accuracy_score(y_test, y_pred)
+
+    precision = precision_score(y_test, y_pred)
+
+    recall = recall_score(y_test, y_pred)
+
+    # Calculate F1-score
+    f1 = f1_score(y_test, y_pred)
+
+    specificity = recall_score(y_test, y_pred, pos_label=0)
+
+    # Print results
+    print("Confusion Matrix:\n", cm)
+    print("Accuracy:", accuracy)
+    print("Precision:", precision)
+    print("Recall:", recall)
+    print("F1-Score:", f1)
+    print("Specificity:", specificity)
+
+print('\n---------------------------------------')
