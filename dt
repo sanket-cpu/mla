@@ -1,0 +1,33 @@
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+
+import pandas as pd
+data=pd.read_csv("zoo_data.csv")
+data.head()
+
+
+
+X=data.iloc[:,0:-1]
+Y=data.iloc[:,-1]
+print(X)
+print(Y)
+
+trainx,testx,trainy,testy=train_test_split(X,Y,test_size = 0.3, random_state = 100)
+dtree = DecisionTreeClassifier(criterion = "entropy")
+dtree.fit(trainx,trainy)
+y_pred=dtree.predict(testx)
+
+print("Confusion Matrix: ",
+        confusion_matrix(testy, y_pred))
+
+print ("Accuracy : ",
+    accuracy_score(testy,y_pred)*100)
+
+print("Report : ",
+    classification_report(testy, y_pred))
+
+import matplotlib.pyplot as plt
+from sklearn import tree
+plt.figure(figsize=(10,10))
+tree.plot_tree(dtree,fontsize=10)
